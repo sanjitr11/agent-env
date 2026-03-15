@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.js.map
+.agent-env/state.db
+.agent-env/state.db-wal
+.agent-env/state.db-shm
+.env
+*.env.local
