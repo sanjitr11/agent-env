@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * agent-env CLI entry point
  *
@@ -9,35 +8,51 @@
  *   agent-env status            Show current startup context
  */
 
-import { join, resolve } from 'path'
-import pc from 'picocolors'
+// Suppress node:sqlite ExperimentalWarning before any imports touch sqlite.
+// Static imports are hoisted in ESM, so we use dynamic imports below to ensure
+// this patch runs first.
+const _emitWarning = process.emitWarning.bind(process)
+;(process as any).emitWarning = (warning: string | Error, ...args: unknown[]) => {
+  const msg = typeof warning === 'string' ? warning : (warning as Error).message
+  if (msg.includes('SQLite')) return
+  if (typeof warning === 'string') {
+    _emitWarning(warning, ...(args as [string?, string?, Function?]))
+  } else {
+    _emitWarning(warning, ...(args as [string?, string?, Function?]))
+  }
+}
 
-const [, , command, ...args] = process.argv
+// Dynamic imports so the warning patch above runs first (static imports are hoisted).
+const { join, resolve } = await import('path')
+const { default: pc } = await import('picocolors')
+const { runInit } = await import('../src/cli/init.js')
+const { runSync } = await import('../src/cli/sync.js')
+const { route, formatRoutingDecision } = await import('../src/cli/route.js')
+const { openDb, closeDb } = await import('../src/state/db.js')
+const { loadStartupContext } = await import('../src/state/startup.js')
+const { STAGE_LABELS } = await import('../src/config/schema.js')
+
+const [, , command, ...cliArgs] = process.argv
 const projectRoot = resolve(process.cwd())
 
 async function main(): Promise<void> {
   switch (command) {
     case 'init': {
-      const { runInit } = await import('../src/cli/init.js')
       await runInit(projectRoot)
       break
     }
 
     case 'sync': {
-      const { runSync } = await import('../src/cli/sync.js')
       await runSync(projectRoot)
       break
     }
 
     case 'route': {
-      const task = args.join(' ').trim()
-
+      const task = cliArgs.join(' ').trim()
       if (!task) {
         console.error(pc.red('Usage: agent-env route <task description>'))
         process.exit(1)
       }
-
-      const { route, formatRoutingDecision } = await import('../src/cli/route.js')
       const decision = route(task)
       console.log('')
       console.log(formatRoutingDecision(decision))
@@ -46,10 +61,6 @@ async function main(): Promise<void> {
     }
 
     case 'status': {
-      const { openDb, closeDb } = await import('../src/state/db.js')
-      const { loadStartupContext } = await import('../src/state/startup.js')
-      const { STAGE_LABELS } = await import('../src/config/schema.js')
-
       const agentEnvDir = join(projectRoot, '.agent-env')
       const store = openDb(agentEnvDir)
       const ctx = loadStartupContext(store)

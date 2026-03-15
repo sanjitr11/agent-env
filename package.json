@@ -4,26 +4,30 @@
   "description": "Persistent specialized agent environment for solo founders — built on Claude Code",
   "type": "module",
   "bin": {
-    "agent-env": "./bin/agent-env.js"
+    "agent-env": "dist/bin/agent-env.js"
   },
+  "files": [
+    "dist/"
+  ],
   "scripts": {
-    "dev": "tsx watch src/cli/init.ts",
-    "build": "tsc",
-    "start": "node bin/agent-env.js",
+    "dev": "tsx bin/agent-env.ts",
+    "build": "tsc && node scripts/postbuild.mjs",
+    "prepublishOnly": "npm run build",
     "init": "tsx bin/agent-env.ts init",
     "route": "tsx bin/agent-env.ts route"
   },
   "dependencies": {
     "@clack/prompts": "^0.9.0",
-    "zod": "^3.22.4",
-    "picocolors": "^1.0.1"
+    "picocolors": "^1.0.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsup": "^8.5.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.5.0"
   }
 }
