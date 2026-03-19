@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import { supabase } from '../lib/supabase'
-import { AGENT_META } from '../lib/agentMeta'
+import { buildClaudeMd, agentCwd } from '../lib/buildClaudeMd'
 import type { Project, Agent } from '../lib/types'
 import '@xterm/xterm/css/xterm.css'
 
@@ -12,25 +12,24 @@ declare global {
     electronAPI: {
       platform: string
       openFolder: () => Promise<string | null>
+      readFile: (filePath: string) => Promise<string | null>
       checkClaude: () => Promise<boolean>
       writeClaudeMd: (opts: { cwd: string; content: string }) => Promise<void>
       terminalStart: (opts: { projectId: string; cwd: string; cols: number; rows: number }) => Promise<void>
-      terminalInput: (data: string) => void
+      terminalInput: (projectId: string, data: string) => void
       terminalResize: (opts: { projectId: string; cols: number; rows: number }) => void
       terminalKill: (projectId: string) => void
-      onTerminalOutput: (cb: (data: string) => void) => () => void
-      onTerminalExit: (cb: () => void) => () => void
+      onTerminalOutput: (projectId: string, cb: (data: string) => void) => () => void
+      onTerminalExit: (projectId: string, cb: () => void) => () => void
     }
   }
-}
-
-function agentSlug(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 }
 
 export default function TerminalPage() {
   const { id, agentId } = useParams<{ id: string; agentId: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const autoCmd = searchParams.get('cmd')
   const terminalRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
   const fitAddonRef = useRef<FitAddon | null>(null)
@@ -64,9 +63,9 @@ export default function TerminalPage() {
       setProject(proj)
       setAgent(ag)
 
-      const agentCwd = `${proj.local_path}/${agentSlug(ag.name)}`
-      setCwd(agentCwd)
-      await bootTerminal(proj, ag, agentCwd)
+      const cwd = agentCwd(proj.local_path!, ag.name)
+      setCwd(cwd)
+      await bootTerminal(proj, ag, cwd)
     })
   }, [id, agentId])
 
@@ -119,11 +118,11 @@ export default function TerminalPage() {
       const { cols, rows } = term
 
       // 5. Forward keystrokes
-      term.onData((data) => api.terminalInput(data))
+      term.onData((data) => api.terminalInput(ag.id, data))
 
       // 6. Subscribe to output
-      const unsubOutput = api.onTerminalOutput((data) => term.write(data))
-      const unsubExit = api.onTerminalExit(() => {
+      const unsubOutput = api.onTerminalOutput(ag.id, (data) => term.write(data))
+      const unsubExit = api.onTerminalExit(ag.id, () => {
         setStatus('exited')
         term.writeln('\r\n\x1b[33m[session ended]\x1b[0m')
       })
@@ -138,6 +137,14 @@ export default function TerminalPage() {
       await api.terminalStart({ projectId: ag.id, cwd: agentCwd, cols, rows })
       setStatus('running')
       term.focus()
+
+      // 8. If an auto-command was requested (e.g. /sync), send it after claude loads
+      if (autoCmd) {
+        const slashCmd = autoCmd === 'sync' ? '/sync' : `/${autoCmd}`
+        setTimeout(() => {
+          api.terminalInput(ag.id, `${slashCmd}\r`)
+        }, 4000)
+      }
 
       // 8. Handle resize
       const ro = new ResizeObserver(() => {
@@ -168,8 +175,7 @@ export default function TerminalPage() {
   }, [agentId])
 
   function handleBack() {
-    if (agentId) window.electronAPI.terminalKill(agentId)
-    navigate(`/projects/${id}/agents/${agentId}`)
+    navigate(-1)
   }
 
   return (
@@ -222,75 +228,4 @@ export default function TerminalPage() {
       />
     </div>
   )
-}
-
-// ── Build CLAUDE.md from project + agent data ───────────────────────────────
-
-function buildClaudeMd(p: Project, ag: Agent): string {
-  const stageLabels: Record<string, string> = {
-    idea: 'Pre-product / exploring the problem space',
-    mvp: 'Building the first version',
-    early: 'Have users, iterating toward PMF',
-    revenue: 'Revenue exists, scaling what works',
-    scaling: 'Scaling teams, infra, and GTM',
-  }
-  const stageTone: Record<string, string> = {
-    idea: 'Validate before building. Speed of learning > speed of shipping.',
-    mvp: 'Ship to learn. Speed > polish. Every decision is reversible.',
-    early: 'Listen to users. Fix what breaks PMF. Ignore everything else.',
-    revenue: "Double down on what works. Kill what doesn't.",
-    scaling: "Systematize. Hire for leverage. Protect what's working.",
-  }
-
-  const priorityItems = p.priorities
-    .split(/[,\n]/)
-    .map((s) => s.trim())
-    .filter(Boolean)
-
-  const priorities = priorityItems.map((s, i) => `${i + 1}. ${s}`).join('\n')
-  const prioritiesInline = priorityItems.join(', ')
-
-  const agentRole = AGENT_META[ag.type].role
-  const instructionsSection = ag.instructions ? `\n${ag.instructions}` : ''
-
-  return `# ${p.startup_name} — ${ag.name}
-
-## Role
-${agentRole}${instructionsSection}
-
-**Session start protocol:** When you begin a new conversation, before
-the user types anything, introduce yourself with:
-"${ag.name} ready. Working on ${p.startup_name} — ${p.pitch.split('\n')[0]}. Current priorities: ${prioritiesInline}. What are we building today?"
-
-This makes it immediately clear to the founder that their startup
-context loaded correctly.
-
-**Before ending your session, always append a one-line summary to the
-Session Log at the bottom of this file using the Write tool.**
-
-## Startup Context
-
-### What We're Building
-${p.pitch}
-
-### Stage
-${stageLabels[p.stage]} — ${stageTone[p.stage]}
-
-### Tech Stack
-${p.stack}
-
-### Ideal Customer
-${p.icp}
-
-### Current Priorities
-${priorities}
-${p.bottleneck ? `\n### Biggest Bottleneck\n${p.bottleneck}` : ''}
-
-## Session Log
-*(append: \`YYYY-MM-DD: [one-line summary of what was done]\`)*
-*(A post-session hook also writes here automatically as a fallback.)*
-
----
-*Synced from agent-env on ${new Date().toISOString().slice(0, 10)}.*
-`
 }

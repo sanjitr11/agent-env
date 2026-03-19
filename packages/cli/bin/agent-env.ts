@@ -28,9 +28,7 @@ const { default: pc } = await import('picocolors')
 const { runInit } = await import('../src/cli/init.js')
 const { runSync } = await import('../src/cli/sync.js')
 const { route, formatRoutingDecision } = await import('../src/cli/route.js')
-const { openDb, closeDb } = await import('../src/state/db.js')
-const { loadStartupContext } = await import('../src/state/startup.js')
-const { STAGE_LABELS } = await import('../src/config/schema.js')
+const { openDb, closeDb, loadStartupContext, STAGE_LABELS } = await import('@agent-env/shared')
 
 const [, , command, ...cliArgs] = process.argv
 const projectRoot = resolve(process.cwd())

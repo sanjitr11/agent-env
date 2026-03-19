@@ -1,31 +1,18 @@
 {
-  "name": "agent-env",
+  "name": "agent-env-workspace",
   "version": "0.1.0",
-  "description": "Persistent specialized agent environment for solo founders — built on Claude Code",
-  "type": "module",
-  "bin": {
-    "agent-env": "dist/bin/agent-env.js"
-  },
-  "files": [
-    "dist/"
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
-    "dev": "tsx bin/agent-env.ts",
-    "build": "tsc && node scripts/postbuild.mjs",
-    "prepublishOnly": "npm run build",
-    "init": "tsx bin/agent-env.ts init",
-    "route": "tsx bin/agent-env.ts route"
-  },
-  "dependencies": {
-    "@clack/prompts": "^0.9.0",
-    "picocolors": "^1.0.1",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "tsup": "^8.5.1",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "build:shared": "npm run build -w packages/shared",
+    "build:cli": "npm run build -w packages/cli",
+    "build": "npm run build:shared && npm run build:cli",
+    "dev:shared": "npm run dev -w packages/shared",
+    "dev:cli": "npm run build:shared && npm run dev -w packages/cli",
+    "dev:app": "npm run dev -w packages/app",
+    "dev": "npm run build:shared && npm run dev -w packages/app"
   },
   "engines": {
     "node": ">=22.5.0"

@@ -7,7 +7,7 @@
  * Design decisions documented in DESIGN.md § Q6.
  */
 
-import { AgentType, AGENT_LABELS, AGENT_DESCRIPTIONS, AGENT_COMMANDS } from '../agents/base.js'
+import { AgentType, AGENT_LABELS, AGENT_DESCRIPTIONS, AGENT_COMMANDS } from '@agent-env/shared'
 
 export interface RoutingDecision {
   agent: AgentType

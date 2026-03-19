@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { writeFile, readFile, mkdir, access } from 'fs/promises'
+import { writeFile, readFile, mkdir, access, appendFile } from 'fs/promises'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import * as pty from 'node-pty'
@@ -190,6 +190,31 @@ function createWindow(): void {
     const claudeDir = join(opts.cwd, '.claude')
     await mkdir(claudeDir, { recursive: true })
     await writeFile(join(claudeDir, 'settings.json'), JSON.stringify(CLAUDE_SETTINGS, null, 2), 'utf-8')
+
+    // 4. Ensure .agentenv/ is in the project root's .gitignore
+    // opts.cwd is <project_root>/.agentenv/<agent-slug>
+    const projectRoot = dirname(dirname(opts.cwd))
+    const gitignorePath = join(projectRoot, '.gitignore')
+    try {
+      let existing = ''
+      try { existing = await readFile(gitignorePath, 'utf-8') } catch {}
+      const lines = existing.split('\n').map((l) => l.trim())
+      if (!lines.includes('.agentenv/')) {
+        const entry = existing.length > 0 && !existing.endsWith('\n')
+          ? '\n.agentenv/\n'
+          : '.agentenv/\n'
+        await appendFile(gitignorePath, entry, 'utf-8')
+      }
+    } catch { /* .gitignore write failed — not fatal */ }
+  })
+
+  // ── Read a file from disk (for session log viewer) ───────────────────────────
+  ipcMain.handle('fs:readFile', async (_event, filePath: string) => {
+    try {
+      return await readFile(filePath, 'utf-8')
+    } catch {
+      return null
+    }
   })
 
   // ── Terminal: start a pty running claude ─────────────────────────────────────
@@ -227,14 +252,14 @@ function createWindow(): void {
 
     ptyProcess.onData((data) => {
       if (!win.isDestroyed()) {
-        win.webContents.send('terminal:output', data)
+        win.webContents.send('terminal:output', { projectId: opts.projectId, data })
       }
     })
 
     ptyProcess.onExit(() => {
       ptyMap.delete(opts.projectId)
       if (!win.isDestroyed()) {
-        win.webContents.send('terminal:exit')
+        win.webContents.send('terminal:exit', { projectId: opts.projectId })
       }
     })
 
@@ -243,11 +268,10 @@ function createWindow(): void {
   })
 
   // ── Terminal: forward keystrokes ─────────────────────────────────────────────
-  ipcMain.on('terminal:input', (_event, data: string) => {
-    // Find the most recently started pty
-    const entries = [...ptyMap.values()]
-    if (entries.length > 0) {
-      entries[entries.length - 1].write(data)
+  ipcMain.on('terminal:input', (_event, opts: { projectId: string; data: string }) => {
+    const ptyProcess = ptyMap.get(opts.projectId)
+    if (ptyProcess) {
+      ptyProcess.write(opts.data)
     }
   })
 

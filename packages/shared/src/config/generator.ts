@@ -19,7 +19,7 @@
  * Invariant: Never overwrites CLAUDE.local.md — that's the user's escape hatch.
  */
 
-import { mkdir, writeFile, readFile, access } from 'fs/promises'
+import { mkdir, writeFile, access } from 'fs/promises'
 import { join } from 'path'
 import { StartupContext } from './schema.js'
 import {

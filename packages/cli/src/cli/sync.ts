@@ -13,9 +13,7 @@ import * as p from '@clack/prompts'
 import pc from 'picocolors'
 import { join } from 'path'
 
-import { generate, formatResult } from '../config/generator.js'
-import { openDb, closeDb } from '../state/db.js'
-import { loadStartupContext } from '../state/startup.js'
+import { generate, formatResult, openDb, closeDb, loadStartupContext } from '@agent-env/shared'
 
 export async function runSync(projectRoot: string): Promise<void> {
   const agentEnvDir = join(projectRoot, '.agent-env')

@@ -10,12 +10,18 @@
 import * as p from '@clack/prompts'
 import pc from 'picocolors'
 import { join } from 'path'
-import { existsSync } from 'fs'
 
-import { makeStartupContext, Stage, STAGE_LABELS } from '../config/schema.js'
-import { generate, formatResult } from '../config/generator.js'
-import { openDb, closeDb } from '../state/db.js'
-import { saveStartupContext, startupContextExists } from '../state/startup.js'
+import {
+  makeStartupContext,
+  Stage,
+  STAGE_LABELS,
+  generate,
+  formatResult,
+  openDb,
+  closeDb,
+  saveStartupContext,
+  startupContextExists,
+} from '@agent-env/shared'
 
 export async function runInit(projectRoot: string): Promise<void> {
   const agentEnvDir = join(projectRoot, '.agent-env')

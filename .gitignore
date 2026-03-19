@@ -7,3 +7,16 @@ dist/
 .agent-env/state.db-shm
 .env
 *.env.local
+
+# Agent context directories (local to each dev machine)
+.agentenv/
+*-agent/
+
+# Electron build output
+packages/app/out/
+
+# Local CLI state
+packages/cli/.agent-env/
+
+# Supabase local temp files
+supabase/.temp/
