@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTheme } from './ThemeProvider'
 import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import { buildClaudeMd, agentCwd } from '../lib/buildClaudeMd'
@@ -19,6 +20,20 @@ interface Props {
   onUnreadOutput: (agentId: string) => void
 }
 
+const DARK_THEME = {
+  background: '#0d1117',
+  foreground: '#e6edf3',
+  cursor: '#e6edf3',
+  selectionBackground: '#264f78',
+}
+
+const LIGHT_THEME = {
+  background: '#f2f1ef',
+  foreground: '#1a1917',
+  cursor: '#1a1917',
+  selectionBackground: '#d1cfc9',
+}
+
 export default function TerminalPanel({
   project,
   agent,
@@ -28,6 +43,7 @@ export default function TerminalPanel({
   onStatusChange,
   onUnreadOutput,
 }: Props) {
+  const { theme } = useTheme()
   const terminalRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
   const fitAddonRef = useRef<FitAddon | null>(null)
@@ -40,6 +56,13 @@ export default function TerminalPanel({
   useEffect(() => {
     visibleRef.current = visible
   }, [visible])
+
+  // Update terminal theme when app theme toggles
+  useEffect(() => {
+    if (termRef.current) {
+      termRef.current.options.theme = theme === 'dark' ? DARK_THEME : LIGHT_THEME
+    }
+  }, [theme])
 
   // When becoming visible: fit + focus
   useEffect(() => {
@@ -126,13 +149,9 @@ export default function TerminalPanel({
       await api.writeClaudeMd({ cwd, content: claudeMd, mcpServers })
 
       // 4. Mount xterm
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light'
       const term = new Terminal({
-        theme: {
-          background: '#0d1117',
-          foreground: '#e6edf3',
-          cursor: '#e6edf3',
-          selectionBackground: '#264f78',
-        },
+        theme: isDark ? DARK_THEME : LIGHT_THEME,
         fontFamily: '"Cascadia Code", "Fira Code", "JetBrains Mono", monospace',
         fontSize: 13,
         lineHeight: 1.4,
@@ -203,10 +222,12 @@ export default function TerminalPanel({
         </div>
       ) : (
         <div
-          ref={terminalRef}
-          className="flex-1 p-2"
+          className="flex flex-col flex-1"
+          style={{ background: theme === 'dark' ? DARK_THEME.background : LIGHT_THEME.background, padding: '8px 12px' }}
           onClick={() => termRef.current?.focus()}
-        />
+        >
+          <div ref={terminalRef} className="flex-1" />
+        </div>
       )}
     </div>
   )

@@ -40,10 +40,10 @@ export default function EditProjectPage() {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-surface-base flex items-center justify-center">
+      <div className="min-h-screen bg-bg-base flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-400 text-sm mb-4">{loadError}</p>
-          <Link to="/projects" className="text-accent hover:text-accent-text text-sm transition-colors">
+          <p className="text-error text-sm mb-4">{loadError}</p>
+          <Link to="/projects" className="text-accent hover:opacity-70 text-sm transition-opacity">
             ← Back to projects
           </Link>
         </div>
@@ -53,22 +53,22 @@ export default function EditProjectPage() {
 
   if (!project) {
     return (
-      <div className="flex items-center justify-center h-screen bg-surface-base">
-        <p className="text-ink-3 text-sm">Loading...</p>
+      <div className="flex items-center justify-center h-screen bg-bg-base">
+        <p className="text-text-muted text-sm">Loading...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-surface-base">
-      <header className="bg-surface-raised border-b border-surface-border px-6 py-3 flex items-center gap-3">
+    <div className="min-h-screen bg-bg-base">
+      <header className="bg-bg-subtle border-b border-border px-6 py-3 flex items-center gap-3">
         <Link
           to={`/projects/${id}`}
-          className="text-sm text-ink-3 hover:text-ink transition-colors"
+          className="text-sm text-text-muted hover:text-text-primary transition-colors"
         >
           ← Back
         </Link>
-        <h1 className="text-sm font-semibold text-ink">Edit {project.startup_name}</h1>
+        <h1 className="text-sm font-semibold text-text-primary">Edit {project.startup_name}</h1>
       </header>
 
       <main className="max-w-xl mx-auto px-6 py-10">

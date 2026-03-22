@@ -74,6 +74,6 @@ ${p.bottleneck ? `\n### Biggest Bottleneck\n${p.bottleneck}` : ''}
 *(A post-session hook also writes here automatically as a fallback.)*
 
 ---
-*Synced from agent-env on ${new Date().toISOString().slice(0, 10)}.*
+*Synced from Dispatch on ${new Date().toISOString().slice(0, 10)}.*
 `
 }

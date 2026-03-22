@@ -13,11 +13,11 @@ const STAGE_LABELS: Record<string, string> = {
 }
 
 const STAGE_COLORS: Record<string, string> = {
-  idea:     'bg-surface-overlay text-ink-2',
-  mvp:      'bg-blue-950 text-blue-400',
-  early:    'bg-emerald-950 text-emerald-400',
-  revenue:  'bg-amber-950 text-amber-400',
-  scaling:  'bg-violet-950 text-violet-400',
+  idea:     'bg-bg-overlay text-text-secondary',
+  mvp:      'bg-bg-overlay text-agent-coding',
+  early:    'bg-bg-overlay text-agent-ops',
+  revenue:  'bg-bg-overlay text-warning',
+  scaling:  'bg-bg-overlay text-agent-research',
 }
 
 export default function ProjectDetailPage() {
@@ -63,18 +63,18 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-surface-base">
-        <p className="text-ink-3 text-sm">Loading...</p>
+      <div className="flex items-center justify-center h-screen bg-bg-base">
+        <p className="text-text-muted text-sm">Loading...</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-surface-base flex items-center justify-center">
+      <div className="min-h-screen bg-bg-base flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-400 text-sm mb-4">{error}</p>
-          <Link to="/projects" className="text-accent hover:text-accent-text text-sm transition-colors">
+          <p className="text-error text-sm mb-4">{error}</p>
+          <Link to="/projects" className="text-accent hover:opacity-70 text-sm transition-opacity">
             ← Back to projects
           </Link>
         </div>
@@ -85,18 +85,18 @@ export default function ProjectDetailPage() {
   if (!project) return null
 
   return (
-    <div className="min-h-screen bg-surface-base">
-      <header className="bg-surface-raised border-b border-surface-border px-6 py-3 flex items-center gap-3">
+    <div className="min-h-screen bg-bg-base">
+      <header className="bg-bg-subtle border-b border-border px-6 py-3 flex items-center gap-3">
         <Link
           to="/projects"
-          className="text-sm text-ink-3 hover:text-ink transition-colors"
+          className="text-sm text-text-muted hover:text-text-primary transition-colors"
         >
           ← Back
         </Link>
-        <h1 className="text-sm font-semibold text-ink">{project.startup_name}</h1>
+        <h1 className="text-sm font-semibold text-text-primary">{project.startup_name}</h1>
         <span
           className={`text-xs px-2.5 py-1 rounded font-medium ${
-            STAGE_COLORS[project.stage] ?? 'bg-surface-overlay text-ink-2'
+            STAGE_COLORS[project.stage] ?? 'bg-bg-overlay text-text-secondary'
           }`}
         >
           {STAGE_LABELS[project.stage] ?? project.stage}
@@ -104,7 +104,7 @@ export default function ProjectDetailPage() {
 
         <Link
           to={`/projects/${id}/edit`}
-          className="text-sm text-ink-3 hover:text-ink transition-colors ml-auto mr-3"
+          className="text-sm text-text-muted hover:text-text-primary transition-colors ml-auto mr-3"
         >
           Edit
         </Link>
@@ -112,7 +112,7 @@ export default function ProjectDetailPage() {
         <div>
           {project.local_path ? (
             <span
-              className="text-xs text-ink-3 max-w-[220px] truncate block"
+              className="text-xs text-text-muted max-w-[220px] truncate block"
               title={project.local_path}
             >
               {project.local_path}
@@ -121,7 +121,7 @@ export default function ProjectDetailPage() {
             <button
               onClick={handleLinkFolder}
               disabled={linkingFolder}
-              className="text-xs text-ink-3 hover:text-ink-2 transition-colors disabled:opacity-50"
+              className="text-xs text-text-muted hover:text-text-secondary transition-colors disabled:opacity-50"
             >
               {linkingFolder ? 'Picking…' : '+ Link folder'}
             </button>
@@ -138,24 +138,23 @@ export default function ProjectDetailPage() {
           <Section label="Biggest Bottleneck">{project.bottleneck}</Section>
         )}
 
-        <p className="text-xs text-ink-3 pt-2">
+        <p className="text-xs text-text-muted pt-2">
           Created {new Date(project.created_at).toLocaleString()} &middot; version {project.version}
         </p>
 
-        {/* Agents section */}
-        <div className="pt-4 border-t border-surface-border">
+        <div className="pt-4 border-t border-border">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-ink">Agents</h2>
+            <h2 className="text-sm font-semibold text-text-primary">Agents</h2>
             <Link
               to={`/projects/${id}/agents/new`}
-              className="text-sm text-accent hover:text-accent-text font-medium transition-colors"
+              className="text-sm text-accent hover:opacity-70 font-medium transition-opacity"
             >
               Add agent →
             </Link>
           </div>
 
           {agents.length === 0 ? (
-            <p className="text-sm text-ink-3">
+            <p className="text-sm text-text-muted">
               No agents yet — add one to start working.
             </p>
           ) : (
@@ -180,10 +179,10 @@ function Section({
 }) {
   return (
     <div>
-      <h3 className="text-[10px] uppercase tracking-widest text-ink-3 font-medium mb-1.5">
+      <h3 className="text-[10px] uppercase tracking-widest text-text-muted font-medium mb-1.5">
         {label}
       </h3>
-      <p className="text-sm text-ink-2 leading-relaxed">{children}</p>
+      <p className="text-sm text-text-secondary leading-relaxed">{children}</p>
     </div>
   )
 }

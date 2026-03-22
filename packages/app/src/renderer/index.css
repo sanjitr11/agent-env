@@ -1,20 +1,139 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Backgrounds */
+  --bg-base: 255 255 255;
+  --bg-subtle: 249 249 248;
+  --bg-muted: 242 241 239;
+  --bg-overlay: 235 235 234;
+
+  /* Borders */
+  --border-default: 229 228 225;
+  --border-strong: 209 207 201;
+
+  /* Text */
+  --text-primary: 26 25 23;
+  --text-secondary: 107 106 103;
+  --text-muted: 160 158 154;
+  --text-disabled: 200 198 193;
+
+  /* Accent */
+  --accent: 24 24 27;
+  --accent-hover: 9 9 11;
+  --accent-subtle: 244 244 245;
+  --accent-text: 255 255 255;
+
+  /* Status */
+  --success: 22 163 74;
+  --success-subtle: 240 253 244;
+  --warning: 217 119 6;
+  --warning-subtle: 255 251 235;
+  --error: 220 38 38;
+  --error-subtle: 254 242 242;
+
+  /* Agent */
+  --agent-coding: 37 99 235;
+  --agent-research: 124 58 237;
+  --agent-marketing: 8 145 178;
+  --agent-ops: 5 150 105;
+  --agent-custom: 107 106 103;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-md: 0 2px 8px 0 rgb(0 0 0 / 0.06), 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 4px 16px 0 rgb(0 0 0 / 0.08), 0 2px 4px 0 rgb(0 0 0 / 0.04);
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Typography */
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-base: 17 17 16;
+  --bg-subtle: 26 25 23;
+  --bg-muted: 34 34 32;
+  --bg-overlay: 42 42 39;
+
+  /* Borders */
+  --border-default: 46 46 43;
+  --border-strong: 61 61 57;
+
+  /* Text */
+  --text-primary: 238 238 236;
+  --text-secondary: 155 154 150;
+  --text-muted: 107 106 103;
+  --text-disabled: 74 74 71;
+
+  /* Accent */
+  --accent: 238 238 236;
+  --accent-hover: 255 255 255;
+  --accent-subtle: 34 34 32;
+  --accent-text: 17 17 16;
+
+  /* Status */
+  --success: 34 197 94;
+  --success-subtle: 15 31 20;
+  --warning: 245 158 11;
+  --warning-subtle: 31 26 15;
+  --error: 239 68 68;
+  --error-subtle: 31 16 16;
+
+  /* Agent */
+  --agent-coding: 59 130 246;
+  --agent-research: 139 92 246;
+  --agent-marketing: 6 182 212;
+  --agent-ops: 16 185 129;
+  --agent-custom: 155 154 150;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 2px 8px 0 rgb(0 0 0 / 0.4), 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 4px 16px 0 rgb(0 0 0 / 0.5), 0 2px 4px 0 rgb(0 0 0 / 0.3);
+}
+
+*, *::before, *::after {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: rgb(var(--text-primary));
+  background-color: rgb(var(--bg-base));
+  -webkit-font-smoothing: antialiased;
+}
+
+code, pre, kbd, .font-mono {
+  font-family: var(--font-mono);
+}
+
 @layer components {
   .input {
-    @apply w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-transparent;
-    background-color: #1c1c22;
-    border: 1px solid #26262f;
-    color: #ededf0;
+    @apply w-full rounded-md px-3 py-2 text-sm;
+    background-color: rgb(var(--bg-base));
+    border: 1px solid rgb(var(--border-default));
+    color: rgb(var(--text-primary));
+    outline: none;
   }
   .input::placeholder {
-    color: #55556a;
+    color: rgb(var(--text-muted));
   }
   .input:focus {
-    --tw-ring-color: #7c5af6;
+    border-color: rgb(var(--border-strong));
+    box-shadow: 0 0 0 1px rgb(var(--border-strong));
   }
 }

@@ -134,13 +134,13 @@ export default function ProjectForm({
       </Field>
 
       {error && (
-        <p className="text-sm text-red-400 bg-red-950 rounded-lg px-3 py-2">{error}</p>
+        <p className="text-sm text-error bg-error-subtle rounded-md px-3 py-2">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-accent hover:bg-accent-hover text-white py-3 px-6 rounded-lg font-medium text-sm disabled:opacity-50 transition-colors"
+        className="w-full bg-accent hover:bg-accent-hover text-accent-text py-3 px-6 rounded-lg font-medium text-sm disabled:opacity-50 transition-colors"
       >
         {loading ? 'Saving...' : submitLabel}
       </button>
@@ -161,10 +161,10 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-ink-2 mb-1">
+      <label className="block text-sm font-medium text-text-secondary mb-1">
         {label}
-        {required && <span className="text-red-400 ml-0.5">*</span>}
-        {hint && <span className="text-ink-3 font-normal ml-1">({hint})</span>}
+        {required && <span className="text-error ml-0.5">*</span>}
+        {hint && <span className="text-text-muted font-normal ml-1">({hint})</span>}
       </label>
       {children}
     </div>

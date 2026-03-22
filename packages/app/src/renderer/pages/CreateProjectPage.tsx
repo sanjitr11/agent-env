@@ -37,19 +37,19 @@ export default function CreateProjectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-base">
-      <header className="bg-surface-raised border-b border-surface-border px-6 py-3 flex items-center gap-3">
+    <div className="min-h-screen bg-bg-base">
+      <header className="bg-bg-subtle border-b border-border px-6 py-3 flex items-center gap-3">
         <Link
           to="/projects"
-          className="text-sm text-ink-3 hover:text-ink transition-colors"
+          className="text-sm text-text-muted hover:text-text-primary transition-colors"
         >
           ← Back
         </Link>
-        <h1 className="text-sm font-semibold text-ink">New Project</h1>
+        <h1 className="text-sm font-semibold text-text-primary">New Project</h1>
       </header>
 
       <main className="max-w-xl mx-auto px-6 py-10">
-        <p className="text-sm text-ink-2 mb-6">
+        <p className="text-sm text-text-secondary mb-6">
           Fill in your startup context. This powers your agent environment — the more
           specific you are, the better your agents perform.
         </p>

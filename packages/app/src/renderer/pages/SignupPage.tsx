@@ -21,7 +21,6 @@ export default function SignupPage() {
       setError(error.message)
       setLoading(false)
     } else if (data.session) {
-      // Auto-confirmed (e.g. email confirmation disabled in Supabase)
       navigate('/projects')
     } else {
       setMessage('Check your email to confirm your account, then sign in.')
@@ -30,21 +29,21 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm space-y-6 p-8 bg-white rounded-xl shadow-sm border">
+    <div className="min-h-screen flex items-center justify-center bg-bg-base">
+      <div className="w-full max-w-sm space-y-6 p-8 bg-bg-subtle rounded-xl border border-border shadow-md">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">agent-env</h1>
-          <p className="text-sm text-gray-500 mt-1">Create your account</p>
+          <h1 className="text-2xl font-semibold text-text-primary">Dispatch</h1>
+          <p className="text-sm text-text-muted mt-1">Create your account</p>
         </div>
 
         {message ? (
-          <div className="text-sm text-green-700 bg-green-50 rounded-lg px-4 py-3 text-center">
+          <div className="text-sm text-success bg-success-subtle rounded-md px-4 py-3 text-center">
             {message}
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">Email</label>
               <input
                 type="email"
                 value={email}
@@ -55,7 +54,7 @@ export default function SignupPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">Password</label>
               <input
                 type="password"
                 value={password}
@@ -67,22 +66,22 @@ export default function SignupPage() {
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
+              <p className="text-sm text-error bg-error-subtle rounded-md px-3 py-2">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="w-full bg-accent text-accent-text py-2.5 rounded-lg font-medium hover:bg-accent-hover disabled:opacity-50 transition-colors"
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
         )}
 
-        <p className="text-sm text-center text-gray-600">
+        <p className="text-sm text-center text-text-secondary">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline font-medium">
+          <Link to="/login" className="text-accent hover:opacity-70 font-medium transition-opacity">
             Sign in
           </Link>
         </p>

@@ -48,22 +48,21 @@ export default function CreateAgentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-base">
-      <header className="bg-surface-raised border-b border-surface-border px-6 py-3 flex items-center gap-3">
+    <div className="min-h-screen bg-bg-base">
+      <header className="bg-bg-subtle border-b border-border px-6 py-3 flex items-center gap-3">
         <Link
           to={`/projects/${id}`}
-          className="text-sm text-ink-3 hover:text-ink transition-colors"
+          className="text-sm text-text-muted hover:text-text-primary transition-colors"
         >
           ← back
         </Link>
-        <h1 className="text-sm font-semibold text-ink">New agent</h1>
+        <h1 className="text-sm font-semibold text-text-primary">New agent</h1>
       </header>
 
       <main className="max-w-lg mx-auto px-6 py-10">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Type select */}
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-ink-3 font-medium mb-2">
+            <label className="block text-[10px] uppercase tracking-widest text-text-muted font-medium mb-2">
               Type
             </label>
             <div className="space-y-2">
@@ -74,13 +73,13 @@ export default function CreateAgentPage() {
                   onClick={() => handleTypeChange(t)}
                   className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
                     type === t
-                      ? 'border-accent bg-accent-muted text-ink'
-                      : 'border-surface-border bg-surface-raised hover:bg-surface-overlay hover:border-ink-3 text-ink'
+                      ? 'border-border-strong bg-accent-subtle text-text-primary'
+                      : 'border-border bg-bg-subtle hover:bg-bg-muted hover:border-border-strong text-text-primary'
                   }`}
                 >
                   <div className="font-medium text-sm">{AGENT_META[t].label}</div>
                   {AGENT_META[t].role && (
-                    <div className={`text-xs mt-0.5 ${type === t ? 'text-accent-text' : 'text-ink-3'}`}>
+                    <div className={`text-xs mt-0.5 ${type === t ? 'text-text-secondary' : 'text-text-muted'}`}>
                       {AGENT_META[t].role}
                     </div>
                   )}
@@ -89,9 +88,8 @@ export default function CreateAgentPage() {
             </div>
           </div>
 
-          {/* Name */}
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-ink-3 font-medium mb-1.5">
+            <label className="block text-[10px] uppercase tracking-widest text-text-muted font-medium mb-1.5">
               Name
             </label>
             <input
@@ -100,24 +98,23 @@ export default function CreateAgentPage() {
               onChange={(e) => setName(e.target.value)}
               required
               maxLength={60}
-              className="w-full px-3 py-2 border border-surface-border bg-surface-overlay rounded-lg text-sm text-ink placeholder-ink-3 focus:outline-none focus:ring-2 focus:ring-accent"
+              className="input"
             />
           </div>
 
-          {/* Advanced toggle */}
           <div>
             <button
               type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-sm text-ink-3 hover:text-ink transition-colors"
+              className="text-sm text-text-muted hover:text-text-primary transition-colors"
             >
               {showAdvanced ? '▾' : '▸'} Advanced
             </button>
             {showAdvanced && (
               <div className="mt-3">
-                <label className="block text-[10px] uppercase tracking-widest text-ink-3 font-medium mb-1.5">
+                <label className="block text-[10px] uppercase tracking-widest text-text-muted font-medium mb-1.5">
                   Custom instructions{' '}
-                  <span className="font-normal text-ink-3 normal-case tracking-normal">({instructions.length}/1000)</span>
+                  <span className="font-normal text-text-muted normal-case tracking-normal">({instructions.length}/1000)</span>
                 </label>
                 <textarea
                   value={instructions}
@@ -125,18 +122,18 @@ export default function CreateAgentPage() {
                   maxLength={1000}
                   rows={5}
                   placeholder="Optional: additional instructions for this agent…"
-                  className="w-full px-3 py-2 border border-surface-border bg-surface-overlay rounded-lg text-sm text-ink placeholder-ink-3 focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                  className="input resize-none"
                 />
               </div>
             )}
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-error text-sm">{error}</p>}
 
           <button
             type="submit"
             disabled={saving || !name.trim()}
-            className="w-full bg-accent hover:bg-accent-hover text-white py-3 px-6 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+            className="w-full bg-accent hover:bg-accent-hover text-accent-text py-3 px-6 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
           >
             {saving ? 'Creating…' : 'Create agent'}
           </button>

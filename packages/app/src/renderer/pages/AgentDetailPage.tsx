@@ -27,7 +27,6 @@ export default function AgentDetailPage() {
   const [sessionLog, setSessionLog] = useState<string[]>([])
   const [claudeMd, setClaudeMd] = useState<string | null>(null)
   const [showContext, setShowContext] = useState(false)
-  // Integrations
   const [integrations, setIntegrations] = useState<Integration[]>([])
   const [connectingType, setConnectingType] = useState<string | null>(null)
   const [connectForm, setConnectForm] = useState<Record<string, string>>({})
@@ -110,18 +109,18 @@ export default function AgentDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-surface-base">
-        <p className="text-ink-3 text-sm">Loading…</p>
+      <div className="flex items-center justify-center h-screen bg-bg-base">
+        <p className="text-text-muted text-sm">Loading…</p>
       </div>
     )
   }
 
   if (error || !agent || !project) {
     return (
-      <div className="min-h-screen bg-surface-base flex items-center justify-center">
+      <div className="min-h-screen bg-bg-base flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-400 text-sm mb-4">{error ?? 'Not found'}</p>
-          <Link to={`/projects/${id}`} className="text-accent hover:text-accent-text text-sm transition-colors">
+          <p className="text-error text-sm mb-4">{error ?? 'Not found'}</p>
+          <Link to={`/projects/${id}`} className="text-accent hover:opacity-70 text-sm transition-opacity">
             ← back to project
           </Link>
         </div>
@@ -132,15 +131,15 @@ export default function AgentDetailPage() {
   const meta = AGENT_META[agent.type]
 
   return (
-    <div className="min-h-screen bg-surface-base">
-      <header className="bg-surface-raised border-b border-surface-border px-6 py-3 flex items-center gap-3">
+    <div className="min-h-screen bg-bg-base">
+      <header className="bg-bg-subtle border-b border-border px-6 py-3 flex items-center gap-3">
         <Link
           to={`/projects/${id}`}
-          className="text-sm text-ink-3 hover:text-ink transition-colors"
+          className="text-sm text-text-muted hover:text-text-primary transition-colors"
         >
           ← back
         </Link>
-        <h1 className="text-sm font-semibold text-ink">{agent.name}</h1>
+        <h1 className="text-sm font-semibold text-text-primary">{agent.name}</h1>
         <span className={`text-xs px-2.5 py-1 rounded font-medium ${meta.color}`}>
           {meta.label}
         </span>
@@ -149,25 +148,25 @@ export default function AgentDetailPage() {
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-6">
         {meta.role && (
           <div>
-            <h3 className="text-[10px] uppercase tracking-widest text-ink-3 font-medium mb-1.5">Role</h3>
-            <p className="text-sm text-ink-2">{meta.role}</p>
+            <h3 className="text-[10px] uppercase tracking-widest text-text-muted font-medium mb-1.5">Role</h3>
+            <p className="text-sm text-text-secondary">{meta.role}</p>
           </div>
         )}
         {agent.instructions && (
           <div>
-            <h3 className="text-[10px] uppercase tracking-widest text-ink-3 font-medium mb-1.5">
+            <h3 className="text-[10px] uppercase tracking-widest text-text-muted font-medium mb-1.5">
               Custom instructions
             </h3>
-            <p className="text-sm text-ink-2 whitespace-pre-wrap">{agent.instructions}</p>
+            <p className="text-sm text-text-secondary whitespace-pre-wrap">{agent.instructions}</p>
           </div>
         )}
-        {/* ── Connected tools ─────────────────────────────────────────────── */}
+
         {(() => {
           const availableDefs = integrationsForAgent(agent.type)
           if (availableDefs.length === 0) return null
           return (
             <div>
-              <h3 className="text-[10px] uppercase tracking-widest text-ink-3 font-medium mb-3">
+              <h3 className="text-[10px] uppercase tracking-widest text-text-muted font-medium mb-3">
                 Connected tools
               </h3>
               <div className="space-y-3">
@@ -176,22 +175,22 @@ export default function AgentDetailPage() {
                   const isConnecting = connectingType === def.type
 
                   return (
-                    <div key={def.type} className="border border-surface-border rounded-lg p-3">
+                    <div key={def.type} className="border border-border rounded-lg p-3">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-ink">{def.label}</span>
+                            <span className="text-sm font-medium text-text-primary">{def.label}</span>
                             {connected && (
-                              <span className="text-[10px] text-emerald-400 font-medium">● connected</span>
+                              <span className="text-[10px] text-success font-medium">● connected</span>
                             )}
                           </div>
-                          <p className="text-xs text-ink-3 mt-0.5">{def.description}</p>
+                          <p className="text-xs text-text-muted mt-0.5">{def.description}</p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {connected ? (
                             <button
                               onClick={() => handleDisconnect(def.type)}
-                              className="text-xs text-gray-500 hover:text-red-400 transition-colors"
+                              className="text-xs text-text-muted hover:text-error transition-colors"
                             >
                               Disconnect
                             </button>
@@ -202,7 +201,7 @@ export default function AgentDetailPage() {
                                 setConnectForm({})
                                 setConnectError(null)
                               }}
-                              className="text-xs text-accent hover:text-accent-text transition-colors"
+                              className="text-xs text-accent hover:opacity-70 transition-opacity"
                             >
                               {isConnecting ? 'Cancel' : 'Connect'}
                             </button>
@@ -210,12 +209,11 @@ export default function AgentDetailPage() {
                         </div>
                       </div>
 
-                      {/* Inline credential form */}
                       {isConnecting && (
-                        <div className="mt-3 space-y-2 border-t border-surface-border pt-3">
+                        <div className="mt-3 space-y-2 border-t border-border pt-3">
                           {def.fields.map((field) => (
                             <div key={field.key}>
-                              <label className="block text-[10px] text-ink-3 mb-1">{field.label}</label>
+                              <label className="block text-[10px] text-text-muted mb-1">{field.label}</label>
                               <input
                                 type={field.secret ? 'password' : 'text'}
                                 value={connectForm[field.key] ?? ''}
@@ -223,21 +221,21 @@ export default function AgentDetailPage() {
                                   setConnectForm((prev) => ({ ...prev, [field.key]: e.target.value }))
                                 }
                                 placeholder={field.placeholder}
-                                className="w-full bg-surface-overlay border border-surface-border rounded px-2.5 py-1.5 text-xs text-ink placeholder-ink-3 focus:outline-none focus:border-accent"
+                                className="input"
                               />
                               {field.hint && (
-                                <p className="text-[10px] text-ink-3 mt-1">{field.hint}</p>
+                                <p className="text-[10px] text-text-muted mt-1">{field.hint}</p>
                               )}
                             </div>
                           ))}
                           {connectError && (
-                            <p className="text-xs text-red-400">{connectError}</p>
+                            <p className="text-xs text-error">{connectError}</p>
                           )}
                           <div className="flex items-center gap-3 pt-1">
                             <button
                               onClick={() => handleConnect(def.type)}
                               disabled={connectSaving || def.fields.some((f) => !connectForm[f.key]?.trim())}
-                              className="text-xs bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded font-medium disabled:opacity-50 transition-colors"
+                              className="text-xs bg-accent hover:bg-accent-hover text-accent-text px-3 py-1.5 rounded font-medium disabled:opacity-50 transition-colors"
                             >
                               {connectSaving ? 'Saving…' : 'Save'}
                             </button>
@@ -245,7 +243,7 @@ export default function AgentDetailPage() {
                               href={def.docsUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[10px] text-ink-3 hover:text-ink transition-colors"
+                              className="text-[10px] text-text-muted hover:text-text-secondary transition-colors"
                             >
                               How to get credentials ↗
                             </a>
@@ -256,7 +254,7 @@ export default function AgentDetailPage() {
                   )
                 })}
               </div>
-              <p className="text-[10px] text-ink-3 mt-2">
+              <p className="text-[10px] text-text-muted mt-2">
                 Credentials are stored in your Supabase project behind row-level security.
                 They are injected into the agent's session at boot — never stored locally.
               </p>
@@ -266,7 +264,7 @@ export default function AgentDetailPage() {
 
         {sessionLog.length > 0 && (
           <div>
-            <h3 className="text-[10px] uppercase tracking-widest text-ink-3 font-medium mb-2">
+            <h3 className="text-[10px] uppercase tracking-widest text-text-muted font-medium mb-2">
               Session log
             </h3>
             <ul className="space-y-1">
@@ -274,8 +272,8 @@ export default function AgentDetailPage() {
                 const [date, ...rest] = entry.split(': ')
                 return (
                   <li key={i} className="flex gap-3 text-sm">
-                    <span className="text-ink-3 shrink-0 font-mono text-xs pt-px">{date}</span>
-                    <span className="text-ink-2">{rest.join(': ')}</span>
+                    <span className="text-text-muted shrink-0 font-mono text-xs pt-px">{date}</span>
+                    <span className="text-text-secondary">{rest.join(': ')}</span>
                   </li>
                 )
               })}
@@ -287,19 +285,19 @@ export default function AgentDetailPage() {
           <div>
             <button
               onClick={() => setShowContext((v) => !v)}
-              className="text-[10px] uppercase tracking-widest text-ink-3 font-medium hover:text-ink transition-colors"
+              className="text-[10px] uppercase tracking-widest text-text-muted font-medium hover:text-text-primary transition-colors"
             >
               {showContext ? '▾' : '▸'} Agent context (CLAUDE.md)
             </button>
             {showContext && (
-              <pre className="mt-3 p-4 bg-surface-overlay rounded-lg text-xs text-ink-2 font-mono whitespace-pre-wrap overflow-auto max-h-96 border border-surface-border">
+              <pre className="mt-3 p-4 bg-bg-subtle rounded-lg text-xs text-text-secondary font-mono whitespace-pre-wrap overflow-auto max-h-96 border border-border">
                 {claudeMd}
               </pre>
             )}
           </div>
         )}
 
-        <p className="text-xs text-ink-3 pt-2">
+        <p className="text-xs text-text-muted pt-2">
           Created {new Date(agent.created_at).toLocaleString()}
         </p>
       </main>
