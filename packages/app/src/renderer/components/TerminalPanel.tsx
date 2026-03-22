@@ -102,13 +102,26 @@ export default function TerminalPanel({
         .eq('agent_id', agent.id)
         .eq('enabled', true)
       // Fetch is zero-auth — always available for web research/competitor analysis
-      const mcpServers = {
+      const mcpServers: Record<string, { command: string; args: string[]; env: Record<string, string> }> = {
         fetch: {
           command: 'npx',
           args: ['-y', '@modelcontextprotocol/server-fetch'],
           env: {},
         },
         ...buildMcpServers((integrationsData ?? []) as Integration[]),
+      }
+      // Filesystem + Git auto-injected for coding agents (zero-auth, scoped to project root)
+      if (agent.type === 'coding' && project.local_path) {
+        mcpServers['filesystem'] = {
+          command: 'npx',
+          args: ['-y', '@modelcontextprotocol/server-filesystem', project.local_path],
+          env: {},
+        }
+        mcpServers['git'] = {
+          command: 'npx',
+          args: ['-y', '@mseep/git-mcp-server'],
+          env: {},
+        }
       }
       await api.writeClaudeMd({ cwd, content: claudeMd, mcpServers })
 

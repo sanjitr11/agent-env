@@ -55,6 +55,27 @@ export const INTEGRATION_DEFS: IntegrationDef[] = [
   },
 
   {
+    type: 'postgres',
+    label: 'PostgreSQL',
+    description: 'Query and inspect any PostgreSQL database — run reads, explore schema, debug queries.',
+    docsUrl: 'https://github.com/modelcontextprotocol/servers/tree/main/src/postgres',
+    agentTypes: ['coding'],
+    fields: [
+      {
+        key: 'connection_string',
+        label: 'Connection String',
+        placeholder: 'postgresql://user:password@host:5432/dbname',
+        hint: 'Full PostgreSQL connection URL including credentials',
+        secret: true,
+      },
+    ],
+    toMcpServer: (config) => ({
+      command: 'npx',
+      args: ['-y', '@modelcontextprotocol/server-postgres', config['connection_string'] ?? ''],
+      env: {},
+    }),
+  },
+  {
     type: 'supabase',
     label: 'Supabase',
     description: 'Query databases, run migrations, manage tables and RLS policies directly from Claude.',
@@ -196,6 +217,42 @@ export const INTEGRATION_DEFS: IntegrationDef[] = [
   },
 
   // ── Ops ───────────────────────────────────────────────────────────────────
+  {
+    type: 'jira',
+    label: 'Jira',
+    description: 'Create and update issues, manage sprints, and query your Jira Cloud workspace.',
+    docsUrl: 'https://github.com/aashari/mcp-server-atlassian-jira',
+    agentTypes: ['ops'],
+    fields: [
+      {
+        key: 'ATLASSIAN_SITE_NAME',
+        label: 'Site name',
+        placeholder: 'your-company',
+        hint: 'The subdomain of your Jira URL: <site-name>.atlassian.net',
+      },
+      {
+        key: 'ATLASSIAN_USER_EMAIL',
+        label: 'Account email',
+        placeholder: 'you@company.com',
+      },
+      {
+        key: 'ATLASSIAN_API_TOKEN',
+        label: 'API Token',
+        placeholder: 'ATATT3x…',
+        hint: 'id.atlassian.com/manage-profile/security/api-tokens → Create API token',
+        secret: true,
+      },
+    ],
+    toMcpServer: (config) => ({
+      command: 'npx',
+      args: ['-y', '@aashari/mcp-server-atlassian-jira'],
+      env: {
+        ATLASSIAN_SITE_NAME: config['ATLASSIAN_SITE_NAME'] ?? '',
+        ATLASSIAN_USER_EMAIL: config['ATLASSIAN_USER_EMAIL'] ?? '',
+        ATLASSIAN_API_TOKEN: config['ATLASSIAN_API_TOKEN'] ?? '',
+      },
+    }),
+  },
   {
     type: 'linear',
     label: 'Linear',
